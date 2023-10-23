@@ -28,3 +28,4 @@ THEN the saved events persist
 ![Alt text](image.png)
 
 ## Link to Live Webpage
+https://eagersidekick.github.io/daily_scheduler/

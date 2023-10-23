@@ -5,6 +5,7 @@
 $(function () {
   var schedule = JSON.parse(localStorage.getItem("schedule"));
   var timeBlocks = $(".time-block");
+  var resetCssOnTheHour;
 
   //displays the current day
   $("#currentDay").text(dayjs().format("MMM DD, YYYY"));
@@ -31,12 +32,14 @@ $(function () {
     });
   }
 
-  //call setTimeBasedCssClass function 
+  //called the settimeBasedCssClass function.
   setTimeBasedCssClass();
 
-  //dayjs to add css classes to the timeblocks
+  //dayjs to add css classes to the timeblocks.
   function setTimeBasedCssClass() {
+    updateHourlyTimeInterval();
     var currentHour = parseInt(dayjs().format("H"));
+
     timeBlocks.each(function () {
       //looks at the id of the timeblock and splits on the dash to identify each one numerically.
       var timeBlockHour = parseInt(this.id.split('-')[1]);
@@ -49,10 +52,24 @@ $(function () {
 
     });
 
+  }
+
+  //function to update the time interval before running the setTimeBasedCssClass function again
+  function updateHourlyTimeInterval()
+  {
+    if (resetCssOnTheHour != null)
+    {
+      clearInterval(resetCssOnTheHour);
+    }
+    
+    var nextHourDelay = 0;
+    while (nextHourDelay < 5000) //This is a buffer to make sure the next hour has actually passed
+    {
+      var nextHour = dayjs().minute(0).second(0).millisecond(0).add(1, "hour");
+      nextHourDelay = nextHour.diff(dayjs());
+    }
     //refreshes every hour to update time
-    var nextHour = dayjs().minute(0).second(0).millisecond(0).add(1, "hour");
-    var nextHourDelay = nextHour.diff(dayjs());
-    setInterval(setTimeBasedCssClass, nextHourDelay);
+    resetCssOnTheHour = setInterval(setTimeBasedCssClass, nextHourDelay);
   }
 
   //event listener for the save button. Saves text to local storage.
