@@ -42,32 +42,31 @@ $(function () {
 
     timeBlocks.each(function () {
       //looks at the id of the timeblock and splits on the dash to identify each one numerically.
+      $(this).removeClass("past").removeClass("present").removeClass("future");
+
       var timeBlockHour = parseInt(this.id.split('-')[1]);
       if (timeBlockHour < currentHour) {
-        $(this).children("textarea").addClass("past");
+        $(this).addClass("past");
       }
       else if (timeBlockHour == currentHour) {
-        $(this).children("textarea").addClass("present");
+        $(this).addClass("present");
       }
-
+      else {
+        $(this).addClass("future");
+      }
     });
 
   }
 
   //function to update the time interval before running the setTimeBasedCssClass function again
-  function updateHourlyTimeInterval()
-  {
-    if (resetCssOnTheHour != null)
-    {
+  function updateHourlyTimeInterval() {
+    if (resetCssOnTheHour != null) {
       clearInterval(resetCssOnTheHour);
     }
-    
-    var nextHourDelay = 0;
-    while (nextHourDelay < 5000) //This is a buffer to make sure the next hour has actually passed
-    {
-      var nextHour = dayjs().minute(0).second(0).millisecond(0).add(1, "hour");
-      nextHourDelay = nextHour.diff(dayjs());
-    }
+
+    var nextHour = dayjs().minute(0).second(0).millisecond(0).add(1, "hour");
+    var nextHourDelay = nextHour.diff(dayjs());
+
     //refreshes every hour to update time
     resetCssOnTheHour = setInterval(setTimeBasedCssClass, nextHourDelay);
   }
