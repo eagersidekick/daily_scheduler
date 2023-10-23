@@ -10,7 +10,7 @@ $(function () {
   if (schedule == null || schedule == "") {
     schedule = {};
 
-    $(".time-block").each(function() {
+    $(".time-block").each(function () {
       schedule[this.id] = "";
     });
 
@@ -21,13 +21,18 @@ $(function () {
   }
 
   function setTimeBlocks() {
-    schedule.map
-    //research javaScript map() function and how to use it to add text to a DOM object
-    //while setting timeblocks check to see if current block matches any 
-    //past/present/future rules and add css class accordingly.
+    $(".time-block").map(function () {
+      $(this).children("textarea").val(schedule[this.id]);
+    });
+
+    setTimeBasedCssClass();
   }
 
-  $(".saveBtn").click(function() {
+  function setTimeBasedCssClass() {
+    //this is where the css class will be set based on the current time of day based on day.js
+  }
+
+  $(".saveBtn").click(function () {
     var hourElement = $(this).parent();
     var hour = $(hourElement).attr("id");
     var text = $(hourElement).children('textarea').val();
