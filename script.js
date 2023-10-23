@@ -2,36 +2,60 @@
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
 
-var schedule;
-
 $(function () {
-  schedule = JSON.parse(localStorage.getItem("schedule"));
+  var schedule = JSON.parse(localStorage.getItem("schedule"));
+  var timeBlocks = $(".time-block");
 
+  //displays the current day
+  $("#currentDay").text(dayjs().format("MMM DD, YYYY"));
+
+  //checks if schedule does not exist and creates it in local storage if not. 
   if (schedule == null || schedule == "") {
     schedule = {};
-
-    $(".time-block").each(function () {
+    // create schedule object attribute key to match timeblock id
+    timeBlocks.each(function () {
       schedule[this.id] = "";
     });
 
     localStorage.setItem("schedule", JSON.stringify(schedule));
   }
+  //if the schedule does exist it runs the setTimeBlocks function. 
   else {
     setTimeBlocks();
   }
 
+  //For each timeblock, get the child of the text block and set it to the value of that hour in local storage. 
   function setTimeBlocks() {
-    $(".time-block").map(function () {
+    timeBlocks.each(function () {
       $(this).children("textarea").val(schedule[this.id]);
     });
-
-    setTimeBasedCssClass();
   }
 
+  //call setTimeBasedCssClass function 
+  setTimeBasedCssClass();
+
+  //dayjs to add css classes to the timeblocks
   function setTimeBasedCssClass() {
-    //this is where the css class will be set based on the current time of day based on day.js
+    var currentHour = parseInt(dayjs().format("H"));
+    timeBlocks.each(function () {
+      //looks at the id of the timeblock and splits on the dash to identify each one numerically.
+      var timeBlockHour = parseInt(this.id.split('-')[1]);
+      if (timeBlockHour < currentHour) {
+        $(this).children("textarea").addClass("past");
+      }
+      else if (timeBlockHour == currentHour) {
+        $(this).children("textarea").addClass("present");
+      }
+
+    });
+
+    //refreshes every hour to update time
+    var nextHour = dayjs().minute(0).second(0).millisecond(0).add(1, "hour");
+    var nextHourDelay = nextHour.diff(dayjs());
+    setInterval(setTimeBasedCssClass, nextHourDelay);
   }
 
+  //event listener for the save button. Saves text to local storage.
   $(".saveBtn").click(function () {
     var hourElement = $(this).parent();
     var hour = $(hourElement).attr("id");
